@@ -126,6 +126,74 @@ public class MainActivity extends AppCompatActivity {
         return result;
     }
 
+    public double process(String str) {
+        String tmpstr = str;
+        int start = 0;
+        int end = 0;
+        String temp = null;
+
+        for (int i = 0; i < str.length(); i++) {
+            if (str.substring(i, i + 1).equals("+") || str.substring(i, i + 1).equals("-")) {
+                if (end == start || start > end) {
+                    end = i;
+                    temp = str.substring(start, end);
+                    if (temp.contains("*") || temp.contains("/")) {
+                        tmpstr = tmpstr.replace(temp, String.valueOf(wk(temp)));
+                        temp = String.valueOf(wk(temp));
+
+                    }
+
+                    start = end + 1;
+                }
+                System.out.print(i+" ");
+
+
+            }else if (i == (str.length() - 1)) {
+
+                temp = str.substring(start);
+                if (temp.contains("*") || temp.contains("/")) {
+                    tmpstr = tmpstr.replace(temp, String.valueOf(wk(temp)));
+                    temp = String.valueOf(wk(temp));
+
+                }
+            }
+
+
+        }
+        double result = pm(tmpstr);
+        return result;
+    }
+
+    public String kako(String str) {
+        double temp[] = new double[1000000];
+        double result = 0;
+        int start = 0;
+        int end = 0;
+        int index1 = 0;
+        int index2 = 0;
+        int ari[] = new int[1000000];
+        boolean begin = true;
+        for (int i = 0; i < str.length(); i++) {
+
+            if (str.substring(i, i + 1).equals("(")) {
+                start=i;
+            } else if (str.substring(i, i + 1).equals(")")) {
+                end=i;
+            }
+
+        }
+        String temp2=str.substring(start+1,end);
+        result = process(temp2);
+
+        System.out.println();
+
+        String strresult = str.replace(str.substring(start,end+1), String.valueOf(result));
+
+
+
+        return strresult;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -148,6 +216,9 @@ public class MainActivity extends AppCompatActivity {
         final Button point=super.findViewById(R.id.buttonpoint);
         final Button equal=super.findViewById(R.id.buttonequal);
         final TextView result=super.findViewById(R.id.resultmath);
+        final Button left =super.findViewById(R.id.buttonleft);
+        final Button right=super.findViewById(R.id.buttonright);
+        final Button delete=super.findViewById(R.id.buttondelete);
         double temp=0;
         double resultNum=0;
 
@@ -266,46 +337,43 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        left.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                result.setText(result.getText()+"(");
+            }
+        });
+
+        right.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                result.setText(result.getText()+")");
+            }
+        });
+
+        delete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String text=result.getText().toString().substring(0,result.length()-1);
+                result.setText(text);
+            }
+        });
+
         equal.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String str = result.getText().toString();
                 String tmpstr = str;
-                int start = 0;
-                int end = 0;
-                String temp = null;
-
-                for (int i = 0; i < str.length(); i++) {
-                    if (str.substring(i, i + 1).equals("+") || str.substring(i, i + 1).equals("-")) {
-                        if (end == start || start > end) {
-                            end = i;
-                            temp = str.substring(start, end);
-                            if (temp.contains("*") || temp.contains("/")) {
-                                tmpstr = tmpstr.replace(temp, String.valueOf(wk(temp)));
-                                temp = String.valueOf(wk(temp));
-
-                            }
-
-                            start = end + 1;
-                        }
-                        System.out.print(i+" ");
 
 
-                    }else if (i == (str.length() - 1)) {
-
-                        temp = str.substring(start);
-                        if (temp.contains("*") || temp.contains("/")) {
-                            tmpstr = tmpstr.replace(temp, String.valueOf(wk(temp)));
-                            temp = String.valueOf(wk(temp));
-
-                        }
-                    }
-
-
+                while(str.contains("(")) {
+                    str=kako(str);
                 }
 
 
-                double num = pm(tmpstr);
+
+
+                double num = process(str);
                 if(num%2!=0&&num%3!=0&&num%5!=0&&num%7!=0){
                     result.setText(String.format("%.6f", num));
                 }else{
